@@ -1,0 +1,123 @@
+[gd_scene load_steps=14 format=3 uid="uid://b1p14bd16qowk"]
+
+[ext_resource type="Script" path="res://charStateTest.gd" id="1_6qy60"]
+[ext_resource type="Script" path="res://godot_state_charts/state_chart.gd" id="2_3tl4f"]
+[ext_resource type="Script" path="res://godot_state_charts/parallel_state.gd" id="3_rm8xr"]
+[ext_resource type="Script" path="res://godot_state_charts/compound_state.gd" id="4_i2i68"]
+[ext_resource type="Script" path="res://godot_state_charts/atomic_state.gd" id="5_w30ij"]
+[ext_resource type="Script" path="res://godot_state_charts/transition.gd" id="6_goyhx"]
+[ext_resource type="Script" path="res://godot_state_charts/not_guard.gd" id="7_wld6v"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_61ewm"]
+size = Vector3(6.75244, 2.35168, 8.58752)
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_aj4cv"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_imk3x"]
+albedo_color = Color(1, 0.117647, 0.117647, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_mcyc2"]
+material = SubResource("StandardMaterial3D_imk3x")
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_1ypd0"]
+size = Vector3(2.74634, 1.20032, 2.27545)
+
+[sub_resource type="Resource" id="Resource_qgdjx"]
+script = ExtResource("7_wld6v")
+
+[node name="enemy" type="CharacterBody3D"]
+script = ExtResource("1_6qy60")
+
+[node name="noticeArea" type="Area3D" parent="."]
+
+[node name="noticeCollision" type="CollisionShape3D" parent="noticeArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.107666, 0.675842, -0.284241)
+shape = SubResource("BoxShape3D_61ewm")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_aj4cv")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CollisionShape3D"]
+mesh = SubResource("CapsuleMesh_mcyc2")
+skeleton = NodePath("../..")
+
+[node name="attackRange" type="Area3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.0657959, 0.100159, -0.0311584)
+
+[node name="attackColl" type="CollisionShape3D" parent="attackRange"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0856675)
+shape = SubResource("BoxShape3D_1ypd0")
+
+[node name="stateManager" type="Node" parent="."]
+
+[node name="StateChart" type="Node" parent="stateManager"]
+script = ExtResource("2_3tl4f")
+
+[node name="ParallelState" type="Node" parent="stateManager/StateChart"]
+script = ExtResource("3_rm8xr")
+
+[node name="movement" type="Node" parent="stateManager/StateChart/ParallelState"]
+script = ExtResource("4_i2i68")
+initial_state = NodePath("idle")
+
+[node name="idle" type="Node" parent="stateManager/StateChart/ParallelState/movement"]
+script = ExtResource("5_w30ij")
+
+[node name="Transition" type="Node" parent="stateManager/StateChart/ParallelState/movement/idle"]
+script = ExtResource("6_goyhx")
+to = NodePath("../../looking")
+event = &"idleToLooking"
+delay_in_seconds = "0.0"
+
+[node name="walking" type="Node" parent="stateManager/StateChart/ParallelState/movement"]
+script = ExtResource("5_w30ij")
+
+[node name="Transition" type="Node" parent="stateManager/StateChart/ParallelState/movement/walking"]
+script = ExtResource("6_goyhx")
+to = NodePath("../../../attacking/attacking")
+event = &"walkingToLooking"
+delay_in_seconds = "0.0"
+
+[node name="looking" type="Node" parent="stateManager/StateChart/ParallelState/movement"]
+script = ExtResource("5_w30ij")
+
+[node name="toIdle" type="Node" parent="stateManager/StateChart/ParallelState/movement/looking"]
+script = ExtResource("6_goyhx")
+to = NodePath("../../idle")
+event = &"lookingToIdle"
+delay_in_seconds = "3.0"
+
+[node name="attacking" type="Node" parent="stateManager/StateChart/ParallelState"]
+script = ExtResource("4_i2i68")
+initial_state = NodePath("waiting")
+
+[node name="attacking" type="Node" parent="stateManager/StateChart/ParallelState/attacking"]
+script = ExtResource("5_w30ij")
+
+[node name="toWaiting" type="Node" parent="stateManager/StateChart/ParallelState/attacking/attacking"]
+script = ExtResource("6_goyhx")
+to = NodePath("../../../movement/idle")
+event = &"finishedAttacking"
+guard = SubResource("Resource_qgdjx")
+delay_in_seconds = "0.0"
+
+[node name="waiting" type="Node" parent="stateManager/StateChart/ParallelState/attacking"]
+script = ExtResource("5_w30ij")
+
+[node name="toAttacking" type="Node" parent="stateManager/StateChart/ParallelState/attacking/waiting"]
+script = ExtResource("6_goyhx")
+to = NodePath("../../attacking")
+event = &"waitingForAttack"
+delay_in_seconds = "0.0"
+
+[node name="reposition" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="body_entered" from="noticeArea" to="." method="_on_notice_area_body_entered"]
+[connection signal="body_exited" from="noticeArea" to="." method="_on_notice_area_body_exited"]
+[connection signal="body_entered" from="attackRange" to="." method="_on_attack_range_body_entered"]
+[connection signal="state_entered" from="stateManager/StateChart/ParallelState/movement/idle" to="." method="_on_idle_state_entered"]
+[connection signal="state_entered" from="stateManager/StateChart/ParallelState/movement/looking" to="." method="_on_looking_state_entered"]
+[connection signal="state_physics_processing" from="stateManager/StateChart/ParallelState/movement/looking" to="." method="_on_looking_state_physics_processing"]
+[connection signal="state_entered" from="stateManager/StateChart/ParallelState/attacking/attacking" to="." method="_on_attacking_state_entered"]
+[connection signal="timeout" from="reposition" to="." method="_on_reposition_timeout"]

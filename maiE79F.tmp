@@ -1,0 +1,190 @@
+[gd_scene load_steps=25 format=3 uid="uid://bsy666iwrocqi"]
+
+[ext_resource type="Shader" path="res://main.gdshader" id="1_r8s6l"]
+[ext_resource type="Script" path="res://ground.gd" id="2_ddg8m"]
+[ext_resource type="Texture2D" uid="uid://d1yewawnyw8tx" path="res://water.png" id="2_ijsnk"]
+[ext_resource type="PackedScene" uid="uid://bb2txh62yl5hf" path="res://character_body_3d.tscn" id="4_m4ifs"]
+[ext_resource type="Script" path="res://the_ball.gd" id="4_tqhyf"]
+[ext_resource type="Script" path="res://path_3d.gd" id="5_s0rgv"]
+[ext_resource type="PackedScene" uid="uid://b20i1pp72du1t" path="res://slope.tscn" id="7_ovrwm"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_k6gao"]
+ground_bottom_color = Color(0.258617, 0.555127, 0.866138, 1)
+ground_horizon_color = Color(0.49423, 0.662717, 0.811696, 1)
+ground_curve = 0.0282842
+
+[sub_resource type="Sky" id="Sky_cwmq3"]
+sky_material = SubResource("ProceduralSkyMaterial_k6gao")
+
+[sub_resource type="Environment" id="Environment_304ep"]
+background_mode = 2
+sky = SubResource("Sky_cwmq3")
+tonemap_mode = 3
+ssao_power = 15.8341
+glow_enabled = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_vye7f"]
+noise_type = 3
+fractal_type = 2
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_xl6mf"]
+seamless = true
+as_normal_map = true
+bump_strength = 5.0
+noise = SubResource("FastNoiseLite_vye7f")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_kycb0"]
+noise_type = 3
+fractal_type = 2
+fractal_weighted_strength = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ecd60"]
+seamless = true
+as_normal_map = true
+bump_strength = 5.0
+noise = SubResource("FastNoiseLite_kycb0")
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_63y3h"]
+fractal_octaves = 10
+fractal_weighted_strength = 1.0
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_fq88m"]
+seamless = true
+seamless_blend_skirt = 1.0
+noise = SubResource("FastNoiseLite_63y3h")
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_0fqd8"]
+render_priority = 0
+shader = ExtResource("1_r8s6l")
+shader_parameter/height_scale = 1.0
+shader_parameter/distance = 0.5
+shader_parameter/waveSpeed = 0.5
+shader_parameter/roughness = 0.0
+shader_parameter/metallic = 0.9
+shader_parameter/noise_scale = 25.0
+shader_parameter/time_scale = 0.15
+shader_parameter/waveDir1 = Vector2(2, 0)
+shader_parameter/waveDir2 = Vector2(0, 1)
+shader_parameter/waveTimeScale = 0.159
+shader_parameter/edge_scale = 0.1
+shader_parameter/near = 1.0
+shader_parameter/far = 100.0
+shader_parameter/edgeColor = Color(1, 1, 1, 1)
+shader_parameter/waterColor = Vector3(1, 1, 1)
+shader_parameter/lineColor = Vector3(0, 0.3, 0.6)
+shader_parameter/noise = SubResource("NoiseTexture2D_xl6mf")
+shader_parameter/normalmap = SubResource("NoiseTexture2D_ecd60")
+shader_parameter/texture_test = ExtResource("2_ijsnk")
+shader_parameter/wave = SubResource("NoiseTexture2D_fq88m")
+
+[sub_resource type="PlaneMesh" id="PlaneMesh_5pli1"]
+material = SubResource("ShaderMaterial_0fqd8")
+size = Vector2(27.26, 27.965)
+subdivide_width = 149
+subdivide_depth = 169
+
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_q1w6r"]
+data = PackedVector3Array(-13.095, 0.07, 13.8725, 13.095, 0.07, 13.8725, -13.095, -0.07, 13.8725, 13.095, 0.07, 13.8725, 13.095, -0.07, 13.8725, -13.095, -0.07, 13.8725, 13.095, 0.07, -13.8725, -13.095, 0.07, -13.8725, 13.095, -0.07, -13.8725, -13.095, 0.07, -13.8725, -13.095, -0.07, -13.8725, 13.095, -0.07, -13.8725, 13.095, 0.07, 13.8725, 13.095, 0.07, -13.8725, 13.095, -0.07, 13.8725, 13.095, 0.07, -13.8725, 13.095, -0.07, -13.8725, 13.095, -0.07, 13.8725, -13.095, 0.07, -13.8725, -13.095, 0.07, 13.8725, -13.095, -0.07, -13.8725, -13.095, 0.07, 13.8725, -13.095, -0.07, 13.8725, -13.095, -0.07, -13.8725, 13.095, 0.07, 13.8725, -13.095, 0.07, 13.8725, 13.095, 0.07, -13.8725, -13.095, 0.07, 13.8725, -13.095, 0.07, -13.8725, 13.095, 0.07, -13.8725, -13.095, -0.07, 13.8725, 13.095, -0.07, 13.8725, -13.095, -0.07, -13.8725, 13.095, -0.07, 13.8725, 13.095, -0.07, -13.8725, -13.095, -0.07, -13.8725)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b8tmc"]
+albedo_color = Color(1, 0.101961, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_w8an3"]
+material = SubResource("StandardMaterial3D_b8tmc")
+
+[sub_resource type="Curve3D" id="Curve3D_7rwyc"]
+_data = {
+"points": PackedVector3Array(8.98561, 0.381874, -0.262787, -8.98561, -0.381874, 0.262787, 0.433952, -0.0696094, -10.3962, -3.94633, 0.239446, -2.72545, 3.94633, -0.239446, 2.72545, -5.97611, 0, 6.66147, -2.00127, -0.18946, 1.80062, 2.00127, 0.18946, -1.80062, 4.19489, 0.108933, 6.81585, 0.311219, -0.622954, 0.531743, -0.311219, 0.622954, -0.531743, 6.88742, 0, -3.51627, 5.24938, -0.0570803, 0.841724, -5.24938, 0.0570803, -0.841724, 0.433951, -0.0696142, -10.3963, 8.98561, 0.381874, -0.262787, -8.98561, -0.381874, 0.262787, 0.433952, -0.0696094, -10.3962),
+"tilts": PackedFloat32Array(0, 0, 0, 0, 0, 0)
+}
+point_count = 6
+
+[sub_resource type="BoxMesh" id="BoxMesh_mix2x"]
+
+[sub_resource type="ConvexPolygonShape3D" id="ConvexPolygonShape3D_r4vrg"]
+points = PackedVector3Array(-0.5, -0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5)
+
+[node name="Node3D" type="Node3D"]
+transform = Transform3D(1, -0.000125832, 0.000118078, 0.000125832, 1, -8.4159e-05, -0.000118078, 8.4159e-05, 1, 0, 0, 0)
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_304ep")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(-0.865933, -0.433023, 0.2503, 0.000214443, 0.500119, 0.865956, -0.500159, 0.749914, -0.432977, 0, 0, 0)
+shadow_enabled = true
+
+[node name="ground" type="MeshInstance3D" parent="."]
+transform = Transform3D(6.87249, 2.54552e-12, 0, -2.84857e-11, 1, 1.16415e-10, 0, 0, 8.5378, -0.0300033, -1.62438, -0.0133398)
+mesh = SubResource("PlaneMesh_5pli1")
+skeleton = NodePath("")
+script = ExtResource("2_ddg8m")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="ground"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ground/StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.740532, 0)
+shape = SubResource("ConcavePolygonShape3D_q1w6r")
+
+[node name="CharacterBody3D" parent="." instance=ExtResource("4_m4ifs")]
+
+[node name="theBall" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 6.38545, -0.298873, -1.02427)
+mesh = SubResource("SphereMesh_w8an3")
+script = ExtResource("4_tqhyf")
+
+[node name="lightPath" type="Path3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.278165, 0)
+curve = SubResource("Curve3D_7rwyc")
+script = ExtResource("5_s0rgv")
+
+[node name="PathFollow3D" type="PathFollow3D" parent="lightPath"]
+transform = Transform3D(-0.0292326, -0.0424237, 0.998668, 1.86264e-09, 0.999095, 0.0424418, -0.999571, 0.00124069, -0.0292062, 0.433952, -0.0696094, -10.3962)
+
+[node name="OmniLight3D" type="OmniLight3D" parent="lightPath/PathFollow3D"]
+transform = Transform3D(-0.0292327, -1.10922e-11, -0.999574, -0.042424, 0.999103, 0.0012407, 0.998676, 0.0424422, -0.0292065, -4.67557, 2.56869, 0.925112)
+light_color = Color(1, 0.498039, 1, 1)
+omni_attenuation = -2.792
+omni_shadow_mode = 0
+
+[node name="slope" parent="." instance=ExtResource("7_ovrwm")]
+
+[node name="slope2" parent="." instance=ExtResource("7_ovrwm")]
+transform = Transform3D(-0.98024, 0.000712093, -0.00014264, 0.000246692, 2.82956, -0.00136593, 1.71879e-05, -0.000476272, -8.1153, -20.1848, -0.920348, -0.0166898)
+
+[node name="platforms" type="Node3D" parent="."]
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="platforms"]
+transform = Transform3D(1, 0, 0, 0, 1.34479, 0, 0, 0, 1.40935, 0, -1.62367, 0)
+mesh = SubResource("BoxMesh_mix2x")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="platforms/MeshInstance3D6"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="platforms/MeshInstance3D6/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_r4vrg")
+
+[node name="MeshInstance3D8" type="MeshInstance3D" parent="platforms"]
+transform = Transform3D(1, 0, 0, 0, 1.34479, 0, 0, 0, 1.40935, 3.69317, -1.62367, 0)
+mesh = SubResource("BoxMesh_mix2x")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="platforms/MeshInstance3D8"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="platforms/MeshInstance3D8/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_r4vrg")
+
+[node name="MeshInstance3D10" type="MeshInstance3D" parent="platforms"]
+transform = Transform3D(1, 0, 0, 0, 1.34479, 0, 0, 0, 1.40935, 7.17353, -1.62367, 0)
+mesh = SubResource("BoxMesh_mix2x")
+skeleton = NodePath("../..")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="platforms/MeshInstance3D10"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="platforms/MeshInstance3D10/StaticBody3D"]
+shape = SubResource("ConvexPolygonShape3D_r4vrg")
+
+[connection signal="spikeUpGround" from="theBall" to="ground" method="_on_spike_up_ground"]
+
+[editable path="slope"]
+[editable path="slope2"]

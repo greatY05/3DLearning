@@ -1,0 +1,298 @@
+[gd_scene load_steps=36 format=3 uid="uid://bb2txh62yl5hf"]
+
+[ext_resource type="Script" path="res://character_body_3d.gd" id="1_8is3g"]
+[ext_resource type="Script" path="res://camerapivot.gd" id="2_imf7r"]
+[ext_resource type="Script" path="res://godot_state_charts/state_chart.gd" id="3_raep7"]
+[ext_resource type="Script" path="res://godot_state_charts/parallel_state.gd" id="4_2iywm"]
+[ext_resource type="Script" path="res://godot_state_charts/compound_state.gd" id="4_bx14o"]
+[ext_resource type="Script" path="res://godot_state_charts/atomic_state.gd" id="5_ngqmk"]
+[ext_resource type="Script" path="res://godot_state_charts/transition.gd" id="6_pioii"]
+[ext_resource type="PackedScene" uid="uid://bcwkugn6v3oy7" path="res://godot_state_charts/utilities/state_chart_debugger.tscn" id="8_mqc5n"]
+[ext_resource type="Script" path="res://godot_state_charts/expression_guard.gd" id="9_dm7ad"]
+[ext_resource type="Script" path="res://godot_state_charts/guard.gd" id="10_xxclc"]
+[ext_resource type="Script" path="res://godot_state_charts/all_of_guard.gd" id="11_7argt"]
+[ext_resource type="Script" path="res://godot_state_charts/state_is_active_guard.gd" id="11_y84ca"]
+[ext_resource type="Script" path="res://godot_state_charts/not_guard.gd" id="12_v7cpj"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_tawxo"]
+margin = 0.0
+radius = 0.331028
+height = 1.19769
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_537fe"]
+albedo_color = Color(0.541176, 0.372549, 1, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_bmaih"]
+material = SubResource("StandardMaterial3D_537fe")
+radius = 0.331
+height = 1.198
+
+[sub_resource type="BoxMesh" id="BoxMesh_iboge"]
+size = Vector3(0.1, 0.1, 1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_mqkgv"]
+
+[sub_resource type="Resource" id="Resource_bodpq"]
+script = ExtResource("9_dm7ad")
+expression = "direction == Vector3(0,0,0)"
+
+[sub_resource type="Resource" id="Resource_nbq8t"]
+script = ExtResource("9_dm7ad")
+expression = "isOnFloor != true
+"
+
+[sub_resource type="Resource" id="Resource_1bnyc"]
+script = ExtResource("9_dm7ad")
+expression = "direction != Vector3(0,0,0)"
+
+[sub_resource type="Resource" id="Resource_1q6kc"]
+script = ExtResource("9_dm7ad")
+expression = "isOnFloor != true"
+
+[sub_resource type="Resource" id="Resource_qu8ka"]
+script = ExtResource("9_dm7ad")
+expression = "isOnWall != true"
+
+[sub_resource type="Resource" id="Resource_5sq7u"]
+script = ExtResource("9_dm7ad")
+expression = "isOnFloor == true"
+
+[sub_resource type="Resource" id="Resource_lry81"]
+script = ExtResource("9_dm7ad")
+expression = "isOnFloor == true"
+
+[sub_resource type="Resource" id="Resource_74n6n"]
+script = ExtResource("9_dm7ad")
+expression = "direction == Vector3(0,0,0)"
+
+[sub_resource type="Resource" id="Resource_ytqug"]
+script = ExtResource("11_7argt")
+guards = Array[ExtResource("10_xxclc")]([SubResource("Resource_lry81"), SubResource("Resource_74n6n")])
+
+[sub_resource type="Resource" id="Resource_50vfp"]
+script = ExtResource("9_dm7ad")
+expression = "isOnFloor == true"
+
+[sub_resource type="Resource" id="Resource_k8a4w"]
+script = ExtResource("9_dm7ad")
+expression = "direction != Vector3(0,0,0)"
+
+[sub_resource type="Resource" id="Resource_0wlgx"]
+script = ExtResource("11_7argt")
+guards = Array[ExtResource("10_xxclc")]([SubResource("Resource_50vfp"), SubResource("Resource_k8a4w")])
+
+[sub_resource type="Resource" id="Resource_plft5"]
+script = ExtResource("9_dm7ad")
+expression = "isOnWall == true "
+
+[sub_resource type="Resource" id="Resource_kf43c"]
+script = ExtResource("11_y84ca")
+state = NodePath("../wall")
+
+[sub_resource type="Resource" id="Resource_e1ujp"]
+script = ExtResource("12_v7cpj")
+guard = SubResource("Resource_kf43c")
+
+[sub_resource type="Resource" id="Resource_peyjx"]
+script = ExtResource("11_7argt")
+guards = Array[ExtResource("10_xxclc")]([SubResource("Resource_plft5"), SubResource("Resource_e1ujp")])
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_e6ebs"]
+height = 1.07434
+
+[node name="player" type="CharacterBody3D"]
+floor_constant_speed = true
+safe_margin = 0.01
+script = ExtResource("1_8is3g")
+jumpHeight = 30
+jumpPeakTime = 4.0
+jumpDescentTime = 3.0
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("CapsuleShape3D_tawxo")
+
+[node name="body" type="MeshInstance3D" parent="."]
+layers = 4
+mesh = SubResource("CapsuleMesh_bmaih")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="body"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0.25)
+layers = 2
+mesh = SubResource("BoxMesh_iboge")
+skeleton = NodePath("../..")
+
+[node name="cameraPoint" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.7, 0)
+
+[node name="pivot" type="Node3D" parent="cameraPoint"]
+transform = Transform3D(1.68, 0, 0, 0, 1.68, 0, 0, 0, 1.68, 0, 0, 0)
+script = ExtResource("2_imf7r")
+
+[node name="innerPivot" type="Node3D" parent="cameraPoint/pivot"]
+
+[node name="SpringArm3D" type="SpringArm3D" parent="cameraPoint/pivot/innerPivot"]
+shape = SubResource("SphereShape3D_mqkgv")
+spring_length = 2.0
+
+[node name="Camera3D" type="Camera3D" parent="cameraPoint/pivot/innerPivot/SpringArm3D"]
+unique_name_in_owner = true
+transform = Transform3D(0.595238, 0, 0, 0, 0.595238, 0, 0, 0, 0.595238, 0, 0, 0)
+rotation_order = 5
+
+[node name="foxTimer" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.1
+one_shot = true
+
+[node name="reverseFox" type="Timer" parent="."]
+process_callback = 0
+wait_time = 0.2
+one_shot = true
+
+[node name="states" type="Node3D" parent="."]
+
+[node name="StateChart" type="Node" parent="states"]
+script = ExtResource("3_raep7")
+track_in_editor = true
+
+[node name="root" type="Node" parent="states/StateChart"]
+script = ExtResource("4_2iywm")
+
+[node name="movement" type="Node" parent="states/StateChart/root"]
+script = ExtResource("4_bx14o")
+initial_state = NodePath("ground")
+
+[node name="ground" type="Node" parent="states/StateChart/root/movement"]
+script = ExtResource("4_bx14o")
+initial_state = NodePath("idle")
+
+[node name="walking" type="Node" parent="states/StateChart/root/movement/ground"]
+script = ExtResource("5_ngqmk")
+
+[node name="toIdle" type="Node" parent="states/StateChart/root/movement/ground/walking"]
+script = ExtResource("6_pioii")
+to = NodePath("../../idle")
+guard = SubResource("Resource_bodpq")
+delay_in_seconds = "0.0"
+
+[node name="toAir" type="Node" parent="states/StateChart/root/movement/ground/walking"]
+script = ExtResource("6_pioii")
+to = NodePath("../../../air")
+guard = SubResource("Resource_nbq8t")
+delay_in_seconds = "0.0"
+
+[node name="idle" type="Node" parent="states/StateChart/root/movement/ground"]
+script = ExtResource("5_ngqmk")
+
+[node name="toWalk" type="Node" parent="states/StateChart/root/movement/ground/idle"]
+script = ExtResource("6_pioii")
+to = NodePath("../../walking")
+guard = SubResource("Resource_1bnyc")
+delay_in_seconds = "0.0"
+
+[node name="toAir" type="Node" parent="states/StateChart/root/movement/ground/idle"]
+script = ExtResource("6_pioii")
+to = NodePath("../../../air/coyoteJump")
+guard = SubResource("Resource_nbq8t")
+delay_in_seconds = "0.0"
+
+[node name="toAir" type="Node" parent="states/StateChart/root/movement/ground"]
+script = ExtResource("6_pioii")
+to = NodePath("../../air")
+guard = SubResource("Resource_1q6kc")
+delay_in_seconds = "0.0"
+
+[node name="air" type="Node" parent="states/StateChart/root/movement"]
+script = ExtResource("4_bx14o")
+initial_state = NodePath("coyoteJump")
+
+[node name="coyoteJump" type="Node" parent="states/StateChart/root/movement/air"]
+editor_description = "maybe good to not set transition to each step, but one to idle and the rest will be handled from there
+"
+script = ExtResource("5_ngqmk")
+
+[node name="coyoteTimeout" type="Node" parent="states/StateChart/root/movement/air/coyoteJump"]
+script = ExtResource("6_pioii")
+to = NodePath("../../cantJump")
+event = &"toCantjump"
+delay_in_seconds = "0.0
+
+
+"
+
+[node name="cantJump" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("5_ngqmk")
+
+[node name="wall" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("5_ngqmk")
+
+[node name="toAir" type="Node" parent="states/StateChart/root/movement/air/wall"]
+script = ExtResource("6_pioii")
+to = NodePath("../../cantJump")
+guard = SubResource("Resource_qu8ka")
+delay_in_seconds = "0.0"
+
+[node name="toGround" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("6_pioii")
+to = NodePath("../../ground")
+guard = SubResource("Resource_5sq7u")
+delay_in_seconds = "0.0"
+
+[node name="toIdle" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("6_pioii")
+to = NodePath("../../ground/idle")
+guard = SubResource("Resource_ytqug")
+delay_in_seconds = "0.0"
+
+[node name="toWalk" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("6_pioii")
+to = NodePath("../../ground/walking")
+guard = SubResource("Resource_0wlgx")
+delay_in_seconds = "0.0"
+
+[node name="toCantjump" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("6_pioii")
+to = NodePath("../cantJump")
+event = &"toCantjump"
+delay_in_seconds = "0.0"
+
+[node name="toWall" type="Node" parent="states/StateChart/root/movement/air"]
+script = ExtResource("6_pioii")
+to = NodePath("../wall")
+guard = SubResource("Resource_peyjx")
+delay_in_seconds = "0.0"
+
+[node name="attacks" type="Node" parent="states/StateChart/root"]
+script = ExtResource("4_bx14o")
+initial_state = NodePath("off")
+
+[node name="off" type="Node" parent="states/StateChart/root/attacks"]
+script = ExtResource("5_ngqmk")
+
+[node name="attack2" type="Node" parent="states/StateChart/root/attacks"]
+script = ExtResource("5_ngqmk")
+
+[node name="wallColl" type="Area3D" parent="."]
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="wallColl"]
+shape = SubResource("CapsuleShape3D_e6ebs")
+
+[node name="StateChartDebugger" parent="." instance=ExtResource("8_mqc5n")]
+offset_right = -916.0
+offset_bottom = -376.0
+initial_node_to_watch = NodePath("../states/StateChart")
+ignore_transitions = true
+
+[connection signal="lockonCamera" from="." to="cameraPoint/pivot" method="_on_lockon_camera"]
+[connection signal="timeout" from="foxTimer" to="." method="_on_fox_timer_timeout"]
+[connection signal="timeout" from="reverseFox" to="." method="_on_reverse_fox_timeout"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement" to="." method="_on_movement_state_physics_processing"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement" to="." method="_jumping_physics_process"]
+[connection signal="state_entered" from="states/StateChart/root/movement/ground" to="." method="_on_ground_state_entered"]
+[connection signal="state_exited" from="states/StateChart/root/movement/ground" to="." method="_on_ground_state_exited"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement/ground/walking" to="." method="_on_walking_state_physics_processing"]
+[connection signal="state_entered" from="states/StateChart/root/movement/air" to="." method="_on_air_state_entered"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement/air" to="." method="_on_in_air_state_physics_processing"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement/air/coyoteJump" to="." method="_jumping_physics_process"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement/air/wall" to="." method="_on_wall_state_physics_processing"]
+[connection signal="state_physics_processing" from="states/StateChart/root/movement/air/wall" to="." method="_jumping_physics_process"]
