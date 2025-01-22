@@ -115,8 +115,9 @@ func _on_movement_state_physics_processing(delta: float) -> void:
 	velocity = Vector3(move_toward(velocity.x, direction.x * SPEED, deceleration), velocity.y, 
 	move_toward(velocity.z, direction.z * SPEED, deceleration)) if direction else Vector3(move_toward(velocity.x, 0, deceleration), velocity.y,
 	move_toward(velocity.z, 0, deceleration))
-	platVel = get_platform_angular_velocity()
-	print(platVel)
+	platVel = get_platform_velocity()
+	floor_snap_length = 0.2
+	print(get_floor_normal() ,platVel)
 	if platVel:
 		velocity.x = platVel.x
 		velocity.z = platVel.z

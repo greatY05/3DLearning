@@ -272,7 +272,7 @@ shadow_enabled = true
 shadow_opacity = 0.3
 
 [node name="player" parent="." instance=ExtResource("4_m4ifs")]
-transform = Transform3D(1, 2.52243e-12, -2.76486e-10, -1.22569e-13, 1, 0, 0, 0, 1, -21.7492, 9.72948, -80.4034)
+transform = Transform3D(1, 2.52243e-12, -3.12866e-10, -1.22569e-13, 1, 0, 0, 0, 1, -24.7525, 3.23167, -58.9032)
 
 [node name="ground" type="MeshInstance3D" parent="."]
 transform = Transform3D(6.87249, 2.52243e-12, -1.16415e-10, -2.86491e-11, 1, 1.16415e-10, 0, 0, 8.5378, -0.0362077, -1.62438, -0.0130385)
